@@ -47,9 +47,23 @@ int main()
     char * commandZ = "/tmp/commandZ"; 
     mkfifo(commandZ, 0666); 
 
-    while (1) 
-    { 
-      
+    int id=fork();
+
+    if (id==0){
+		//printf("Hello from the child process\n");
+        /*
+        this needs to exec motorx and motorz
+        check: 
+        week 7 and https://www.youtube.com/watch?v=OVFEWSP7n8c&t=466s&ab_channel=CodeVault
+        */
+	}
+
+    else{
+		printf("Hello from the father process\n");
+        fflush(stdout);
+
+        
+        while (1) { 
         fd = open(commandX, O_WRONLY); //opens the file
         fd2 = open(commandZ,O_WRONLY); 
         printf("Please enter motor x command\n");
@@ -67,6 +81,8 @@ int main()
         write(fd2, Z_output, strlen(Z_input)+1); 
         close(fd); //close the file
         close(fd2); 
-    } 
+        }
+	} 
     return 0; 
 } 
+
