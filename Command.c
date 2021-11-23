@@ -1,24 +1,18 @@
-#include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <string.h> 
 #include <fcntl.h> 
 #include <sys/stat.h> 
 #include <sys/types.h> 
-#include <unistd.h>
+#include <unistd.h> 
+#include <stdlib.h>
+
+char X_input[80], Z_input[80],  X_output[80], Z_output[80];
 
 
-
-
-
-char X_input[80], Z_input[80], X_output[80], Z_output[80];
 void setting(){
-    char inc[] = "Increase";
-    char dec[] = "Decrease";
-    char still[] = "Still";
+    char inc[] = "Inc";
+    char dec[] = "Dec";
+    char still[] = "Stil";
     switch (X_input[0]){
     case 'j':
         strcpy(X_output,inc);
@@ -42,29 +36,37 @@ void setting(){
         break;
 }
 }
-int main(){
-    int X;
-    char * commandx = "/tmp/commandx"; 
-    mkfifo(commandx, 0666);
-    //char * commandz = "/tmp/commandz"; 
-    //mkfifo(commandz, 0666);
+
+
+int main() 
+{ 
+    int fd,fd2; 
+    char * commandX = "/tmp/commandX"; 
+    mkfifo(commandX, 0666);
     
+    char * commandZ = "/tmp/commandZ"; 
+    mkfifo(commandZ, 0666); 
 
-    while (1){
-        X = open(commandx, O_WRONLY); 
-        //int Z = open(commandz, O_WRONLY);
-        printf("Please enter command for motor X\n");
+    while (1) 
+    { 
+      
+        fd = open(commandX, O_WRONLY); //opens the file
+        fd2 = open(commandZ,O_WRONLY); 
+        printf("Please enter motor x command\n");
+	    fflush(stdout);
+        fgets(X_input, 80 , stdin); //print what i have just inputted
         fflush(stdout);
-        fgets(X_input, 80 , stdin);
-        // printf("Please enter command for motor Z\n");
-        // fflush(stdout);
-        // fgets(Z_input, 80 , stdin);
-        setting();
-        write(X, X_output, strlen(X_output)+1); 
-        //write(Z, Z_output, strlen(Z_output)+1);
-        close(X);
-        //close(Z);
-    }
 
-    return 0;
-}
+        printf("Please enter motor z command\n");
+	    fflush(stdout);
+        fgets(Z_input, 80 , stdin);
+        fflush(stdout);
+
+        setting();
+        write(fd, X_output, strlen(Z_input)+1); //writes in file
+        write(fd2, Z_output, strlen(Z_input)+1); 
+        close(fd); //close the file
+        close(fd2); 
+    } 
+    return 0; 
+} 
