@@ -23,7 +23,7 @@ int main()
     {
         fd2 = open(commandZ,O_RDONLY);
         read(fd2, str2, 80); 
-        puts(str2);
+        //puts(str2);
         fflush(stdout);
         close(fd2);
 

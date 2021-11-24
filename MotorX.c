@@ -25,7 +25,7 @@ int main()
     {
         fd1 = open(commandX,O_RDONLY); 
         read(fd1, str1, 80); //read form command
-        puts(str1); //print on terminal what was written
+        //puts(str1); //print on terminal what was written
         fflush(stdout);
         close(fd1);
 

@@ -4,6 +4,4 @@ gcc MotorZ.c -o motorz
 gcc Inspection.c -o inspection
 
 konsole  -e ./command &
-konsole  -e ./motorx &
-konsole  -e ./motorz &
 konsole  -e ./inspection &
