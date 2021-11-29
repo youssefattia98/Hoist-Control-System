@@ -5,6 +5,17 @@
 #include <sys/types.h> 
 #include <unistd.h> 
 #include <stdlib.h>
+#include <time.h>
+
+float generror(){
+
+    /*
+    This function returns a random number between 0 and 1 as float
+    */
+    float error;
+    srand ( time(NULL) );
+    return error = (double)rand() / (double)RAND_MAX ;
+}
   
 int main() 
 { 

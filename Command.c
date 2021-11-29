@@ -50,7 +50,6 @@ int main()
     pid_t first, second;
     first = fork();
 
-
     if (first==0){
         /*
         Should exec the motorX process
@@ -82,12 +81,18 @@ int main()
             while (1) { 
             fd = open(commandX, O_WRONLY); //opens the file
             fd2 = open(commandZ,O_WRONLY); 
-            printf("Please enter motor x command\n");
+            printf("Please enter motor x commanda\n");
+            printf("j: Increase\n");
+            printf("l: Increase\n");
+            printf("Any bottom: Stop\n");
             fflush(stdout);
             fgets(X_input, 80 , stdin); //print what i have just inputted
             fflush(stdout);
 
             printf("Please enter motor z command\n");
+            printf("i: Increase\n");
+            printf("k: Increase\n");
+            printf("Any bottom: Stop\n");
             fflush(stdout);
             fgets(Z_input, 80 , stdin);
             fflush(stdout);
@@ -103,4 +108,3 @@ int main()
 	} 
     return 0; 
 } 
-

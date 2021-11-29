@@ -36,3 +36,6 @@ int main()
     } 
     return 0; 
 } 
+
+
+//it should empty the fifio before recving the signal s
