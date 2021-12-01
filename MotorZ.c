@@ -32,15 +32,15 @@ int main()
 
     while (1) 
     {
-        fd2 = open(commandZ,O_RDONLY);
+        fd2 = open(commandZ,O_RDWR);
         read(fd2, str2, 80); 
         //puts(str2);
         fflush(stdout);
-        close(fd2);
+        //close(fd2);
 
-        fd3 = open(inspectionz,O_WRONLY);
+        fd3 = open(inspectionz,O_RDWR);
         write(fd3, str3, strlen(str3)+1);
-        close(fd3); 
+        //close(fd3); 
     } 
     return 0; 
 } 

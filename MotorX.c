@@ -41,8 +41,8 @@ int main()
 
     while (1) 
     {
-        fd1 = open(commandX,O_RDONLY); 
-        read(fd1, rec, 80); //read form command
+        fd1 = open(commandX,O_RDWR); 
+        //read(fd1, rec, 80); //read form command
         //puts(rec); //print on terminal what was written
         fflush(stdout);
         close(fd1);
@@ -98,9 +98,9 @@ int main()
         }
 
 
-        fd2 = open(inspectionx,O_WRONLY);
+        fd2 = open(inspectionx,O_RDWR);
         write(fd2, sen, strlen(sen)+1);
-        close(fd2); 
+        //close(fd2); 
     } 
     return 0; 
 }

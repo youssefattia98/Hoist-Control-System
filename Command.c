@@ -5,6 +5,8 @@
 #include <sys/types.h> 
 #include <unistd.h> 
 #include <stdlib.h>
+#include <signal.h>
+#include <ctype.h>
 
 char X_input[80], Z_input[80],  X_output[80], Z_output[80];
 
@@ -38,73 +40,43 @@ void setting(){
 }
 
 
-int main() 
+int main(int argc, char * argv[]) 
 { 
-    int fd,fd2; 
+    int fd,fd2, watchdogPID; 
     char * commandX = "/tmp/commandX"; 
     mkfifo(commandX, 0666);
     
     char * commandZ = "/tmp/commandZ"; 
-    mkfifo(commandZ, 0666); 
+    mkfifo(commandZ, 0666);
 
-    pid_t first, second;
-    first = fork();
+    while (1) { 
+    fd = open(commandX, O_RDWR); //opens the file
+    fd2 = open(commandZ,O_RDWR); 
+    printf("Please enter motor x commanda\n");
+    printf("j: Increase\n");
+    printf("l: Increase\n");
+    printf("Any bottom: Stop\n");
+    fflush(stdout);
+    fgets(X_input, 80 , stdin); //print what i have just inputted
+    fflush(stdout);
 
-    if (first==0){
-        /*
-        Should exec the motorX process
-        */
-        // printf("hello form first\n");
-        // fflush(stdout);
-        char *args[]={"./motorx",NULL};
-        execvp(args[0],args);
-	}
+    printf("Please enter motor z command\n");
+    printf("i: Increase\n");
+    printf("k: Increase\n");
+    printf("Any bottom: Stop\n");
+    fflush(stdout);
+    fgets(Z_input, 80 , stdin);
+    fflush(stdout);
 
-    else{
-        second = fork();
+    setting();
+    write(fd, X_output, strlen(Z_input)+1); //writes in file
+    write(fd2, Z_output, strlen(Z_input)+1); 
+    //close(fd); //close the file
+    //close(fd2);
 
-        if (second == 0) {
-             /*
-            Should exec the motorZ process
-             */
-		    // printf("hello form second\n");
-            // fflush(stdout);
-            char *args[]={"./motorz",NULL};
-            execvp(args[0],args);
-        }
 
-        else{
-            // printf("Hello from the father process\n");
-            // fflush(stdout);
-
-            
-            while (1) { 
-            fd = open(commandX, O_WRONLY); //opens the file
-            fd2 = open(commandZ,O_WRONLY); 
-            printf("Please enter motor x commanda\n");
-            printf("j: Increase\n");
-            printf("l: Increase\n");
-            printf("Any bottom: Stop\n");
-            fflush(stdout);
-            fgets(X_input, 80 , stdin); //print what i have just inputted
-            fflush(stdout);
-
-            printf("Please enter motor z command\n");
-            printf("i: Increase\n");
-            printf("k: Increase\n");
-            printf("Any bottom: Stop\n");
-            fflush(stdout);
-            fgets(Z_input, 80 , stdin);
-            fflush(stdout);
-
-            setting();
-            write(fd, X_output, strlen(Z_input)+1); //writes in file
-            write(fd2, Z_output, strlen(Z_input)+1); 
-            close(fd); //close the file
-            close(fd2); 
-        }
-        }
-		
-	} 
+    watchdogPID = atoi(argv[1]);
+    kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
+    } 
     return 0; 
 } 
