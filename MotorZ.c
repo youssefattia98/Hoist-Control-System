@@ -6,6 +6,14 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+#include <ctype.h>
+
+//Global varibales
+int Zpos, Zesti_pos = 0;
+float err=0;
+char rec[80]="";
+char sen[80]= "from motor z"; //output sting
 
 float generror(){
 
@@ -16,31 +24,51 @@ float generror(){
     srand ( time(NULL) );
     return error = (double)rand() / (double)RAND_MAX ;
 }
-  
-int main() 
+
+
+int main(int argc, char * argv[]) 
 { 
-    int fd2,fd3; 
+    int fd2,fd3,watchdogPID; 
 
     char * commandZ = "/tmp/commandZ"; 
-    mkfifo(commandZ, 0666);
-
-    char * inspectionz = "/tmp/inspectionz"; 
+    char * inspectionz = "/tmp/inspectionz";
     mkfifo(inspectionz, 0666); 
     
-    char str2[80]="";
-    char str3[80]="change later";
+
 
     while (1) 
     {
-        fd2 = open(commandZ,O_RDWR);
-        read(fd2, str2, 80); 
-        //puts(str2);
-        fflush(stdout);
-        //close(fd2);
+        fd2 = open(commandZ,O_RDONLY);
+        fd_set rfds;
+        struct timeval tv;
+        int retval;
+        FD_ZERO(&rfds);
+        FD_SET(fd2, &rfds);
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        retval = select(fd2+1, &rfds, NULL, NULL, &tv);
 
-        fd3 = open(inspectionz,O_RDWR);
-        write(fd3, str3, strlen(str3)+1);
-        //close(fd3); 
+        if (retval == -1){
+            perror("error!");
+        }
+        else if (retval){
+            /*
+            data is now available
+            */
+           read(fd2, rec, 80);
+           //should call function here to edit the sent stirng
+           fd3 = open(inspectionz,O_WRONLY);
+           write(fd3, sen, strlen(sen)+1);
+        }
+        else{
+            /*
+            no data update
+            */
+           fd3 = open(inspectionz,O_WRONLY);
+           write(fd3, sen, strlen(sen)+1);
+        }
+        watchdogPID = atoi(argv[1]);
+        kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
     } 
     return 0; 
 } 

@@ -14,7 +14,7 @@ char X_input[80], Z_input[80],  X_output[80], Z_output[80];
 void setting(){
     char inc[] = "Inc";
     char dec[] = "Dec";
-    char still[] = "Stil";
+    char still[] = "Sti";
     switch (X_input[0]){
     case 'j':
         strcpy(X_output,inc);
@@ -42,7 +42,7 @@ void setting(){
 
 int main(int argc, char * argv[]) 
 { 
-    int fd,fd2, watchdogPID; 
+    int fd,fd2, watchdogPID,motorzPID,motorxPID;; 
     char * commandX = "/tmp/commandX"; 
     mkfifo(commandX, 0666);
     
@@ -50,33 +50,39 @@ int main(int argc, char * argv[])
     mkfifo(commandZ, 0666);
 
     while (1) { 
-    fd = open(commandX, O_RDWR); //opens the file
-    fd2 = open(commandZ,O_RDWR); 
-    printf("Please enter motor x commanda\n");
-    printf("j: Increase\n");
-    printf("l: Increase\n");
-    printf("Any bottom: Stop\n");
-    fflush(stdout);
-    fgets(X_input, 80 , stdin); //print what i have just inputted
-    fflush(stdout);
+        fd = open(commandX, O_WRONLY); //opens the file
+        fd2 = open(commandZ,O_WRONLY);
 
-    printf("Please enter motor z command\n");
-    printf("i: Increase\n");
-    printf("k: Increase\n");
-    printf("Any bottom: Stop\n");
-    fflush(stdout);
-    fgets(Z_input, 80 , stdin);
-    fflush(stdout);
+        watchdogPID = atoi(argv[1]);
+        motorzPID = atoi(argv[2]);
+        motorxPID = atoi(argv[3]);
+        printf("Please enter motor x command\n");
+        printf("j: Increase\n");
+        printf("l: Decrease\n");
+        printf("Any bottom: Stop\n");
+        fflush(stdout);
+        fgets(X_input, 80 , stdin); //print what i have just inputted
+        fflush(stdout);
 
-    setting();
-    write(fd, X_output, strlen(Z_input)+1); //writes in file
-    write(fd2, Z_output, strlen(Z_input)+1); 
-    //close(fd); //close the file
-    //close(fd2);
+        printf("Please enter motor z command\n");
+        printf("i: Increase\n");
+        printf("k: Decrease\n");
+        printf("Any bottom: Stop\n");
+        fflush(stdout);
+        fgets(Z_input, 80 , stdin);
+        fflush(stdout);
 
+        setting();
+        kill(motorxPID,SIGCONT);
+        kill(motorzPID,SIGCONT);
+        write(fd, X_output, strlen(Z_input)+1); //writes in file
+        write(fd2, Z_output, strlen(Z_input)+1); 
+        close(fd);
+        close(fd2);
 
-    watchdogPID = atoi(argv[1]);
-    kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
-    } 
+        kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
+    }
+    unlink("/tmp/commandX");
+    unlink("/tmp/commandZ");
     return 0; 
 } 

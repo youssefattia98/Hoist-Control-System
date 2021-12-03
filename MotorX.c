@@ -6,6 +6,14 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+#include <ctype.h>
+
+//Global varibales
+int Xpos, Xesti_pos = 0;
+float err=0;
+char rec[80]="";
+char sen[80]="from motor x"; //out sting 
 
 float generror(){
 
@@ -18,21 +26,12 @@ float generror(){
 }
 
 
-
-int Xpos, Xesti_pos = 0;
-float err=0;
-char rec[80]="";
-char sen[80]="";
-
-int main() 
+int main(int argc, char * argv[]) 
 { 
-    int fd1;
-    int fd2;
+    int fd1,fd2,watchdogPID;
 
      
     char * commandX = "/tmp/commandX"; 
-    mkfifo(commandX, 0666); 
-
     char * inspectionx = "/tmp/inspectionx"; 
     mkfifo(inspectionx, 0666); 
 
@@ -41,26 +40,44 @@ int main()
 
     while (1) 
     {
-        fd1 = open(commandX,O_RDWR); 
-        //read(fd1, rec, 80); //read form command
-        //puts(rec); //print on terminal what was written
-        fflush(stdout);
-        close(fd1);
+        fd1 = open(commandX,O_RDONLY);
+        fd_set rfds;
+        struct timeval tv;
+        int retval;
+        FD_ZERO(&rfds);
+        FD_SET(fd1, &rfds);
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        retval = select(fd1+1, &rfds, NULL, NULL, &tv);
 
-         /*
-        last command = stop
-        loop [
-        update/receive command
-        if ( command == reset ) <reset procedure>
-        if ( command != stop || ~(position == displacement_end) ) [
-        position += step
-        estimated position = position + error
-        <send estimate position>
-        ]
-        sleep (dt)
-        ]
-        */
+        if (retval == -1){
+            perror("error!");
+        }
+        else if (retval){
+            /*
+            data is now available
+            */
+           read(fd1, rec, 80);
+           fd2 = open(inspectionx,O_WRONLY);
+           //should call function here to edit the sent stirng
+           write(fd2, sen, strlen(sen)+1);
+        }
+        else{
+            /*
+            no data update
+            */
+           fd2 = open(inspectionx,O_WRONLY);
+           //should call function here to edit the sent stirng
+           write(fd2, sen, strlen(sen)+1);
+        }
+        watchdogPID = atoi(argv[1]);
+        kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
+    } 
+    return 0; 
+}
 
+//if u reach make and min no error is added 
+/*
         char inc[] = "Inc";
         char dec[] = "Dec";
         char still[] = "Stil";
@@ -96,13 +113,4 @@ int main()
             err=generror();
             Xesti_pos=Xpos+err;
         }
-
-
-        fd2 = open(inspectionx,O_RDWR);
-        write(fd2, sen, strlen(sen)+1);
-        //close(fd2); 
-    } 
-    return 0; 
-}
-
-//if u reach make and min no error is added 
+*/

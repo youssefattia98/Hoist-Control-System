@@ -10,32 +10,57 @@
 
 int main(int argc, char * argv[]) 
 {
-    int fd2, fd3,watchdogPID; 
+    int fd2, fd3,watchdogPID,motorzPID,motorxPID;
+    int son=0; 
 
     char * inspectionx = "/tmp/inspectionx"; 
-    mkfifo(inspectionx, 0666); 
-
     char * inspectionz = "/tmp/inspectionz"; 
-    mkfifo(inspectionz, 0666); 
 
     char str2[80]="";
     char str3[80]="";
-
     while (1) 
     {
-        fd2 = open(inspectionx,O_RDWR); 
-        read(fd2, str2, 80); 
+
+        son=fork();
+        if (son==0){
+        fd2 = open(inspectionx,O_RDONLY);
+        fd3 = open(inspectionz,O_RDONLY); 
+        read(fd2, str2, 80);
+        read(fd3, str3, 80); 
         puts(str2);
         fflush(stdout);
-        //close(fd2);
-
-        fd3 = open(inspectionz,O_RDWR); 
-        read(fd3, str3, 80); 
         puts(str3);
         fflush(stdout);
-        //close(fd3);
-        //watchdogPID = atoi(argv[1]);
-        //kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
+        watchdogPID = atoi(argv[1]);
+        motorzPID = atoi(argv[2]);
+        motorxPID = atoi(argv[3]);
+        kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
+        }
+        else{
+            printf("Press s-->STOP\n");
+            printf("Press r-->Reset\n");
+            char input[80]="";
+            char stop[]="s\n";
+            char reset[]="r\n";
+            fgets(input, 80 , stdin);
+            printf("you have enetred:");
+            puts(input);
+            if (!strcmp(input,stop))
+            {
+                printf("process should stop\n");
+                kill(motorxPID, SIGSTOP); //send a signal to the motorx
+         	    kill(motorzPID, SIGSTOP); //send a signal to the motorz
+            }
+            else if (!strcmp(input,reset))
+            {
+                printf("process should reset\n");
+                kill(motorxPID, SIGUSR2); //send a signal to the motorx
+         	    kill(motorzPID, SIGUSR2); //send a signal to the motorz
+            }
+            else{
+                printf("Wrong input\n");
+            }
+        }
     } 
     return 0; 
 } 
