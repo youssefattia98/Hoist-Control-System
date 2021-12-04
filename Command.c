@@ -7,10 +7,32 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
+// nothing works because of the file creation
 
 char X_input[80], Z_input[80],  X_output[80], Z_output[80];
+char senstr[]="";
 
+void createfile(){
+  FILE *fp;
+  char pids[100];
+  //char senstr[100];
 
+  
+   // Open file in write mode
+   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pids","r");
+
+   // If file opened successfully, then write the string to file
+   if ( fp )
+   {
+	   fgets(senstr,60,fp);
+    }
+   else
+      {
+         printf("Failed to open the file\n");
+        }
+//Close the file
+   fclose(fp);
+}
 void setting(){
     char inc[] = "Inc";
     char dec[] = "Dec";
@@ -42,17 +64,25 @@ void setting(){
 
 int main(int argc, char * argv[]) 
 { 
-    int fd,fd2, watchdogPID,motorzPID,motorxPID;; 
+    int fd,fd2, watchdogPID,motorzPID,motorxPID,fd4; 
     char * commandX = "/tmp/commandX"; 
     mkfifo(commandX, 0666);
     
     char * commandZ = "/tmp/commandZ"; 
     mkfifo(commandZ, 0666);
 
+    char * pids = "/tmp/pids"; 
+    char pidstr[80]="";
     while (1) { 
         fd = open(commandX, O_WRONLY); //opens the file
         fd2 = open(commandZ,O_WRONLY);
+        fd4 = open(pids,O_RDONLY); 
 
+        createfile();
+        printf("lets see: %s", senstr);
+
+        //read(fd4, pidstr, 80);
+        // puts(pidstr);
         watchdogPID = atoi(argv[1]);
         motorzPID = atoi(argv[2]);
         motorxPID = atoi(argv[3]);
@@ -79,7 +109,6 @@ int main(int argc, char * argv[])
         write(fd2, Z_output, strlen(Z_input)+1); 
         close(fd);
         close(fd2);
-
         kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
     }
     unlink("/tmp/commandX");

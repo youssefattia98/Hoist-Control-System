@@ -10,19 +10,90 @@
 #include <ctype.h>
 
 //Global varibales
-int Xpos, Xesti_pos = 0;
+int Xpos=0;
+float Xesti_pos = 0;
 float err=0;
-char rec[80]="";
-char sen[80]="from motor x"; //out sting 
+char rec[80]="0";
+char sen[80]="0"; //out sting 
+char act[80]; //global variable stores which is token from the command
+float pos=0;
 
-float generror(){
-
+float generror()
+{
     /*
     This function returns a random number between 0 and 1 as float
     */
     float error;
     srand ( time(NULL) );
     return error = (double)rand() / (double)RAND_MAX ;
+}
+
+char inc[] = "Inc";
+char dec[] = "Dec";
+char still[] = "Sti";
+char reset[]="reset";
+
+float motion()
+{
+
+if(!strcmp(rec, inc))
+{
+            //should keep increasing until we reach Zpos=10
+            if(Xpos<10)
+            {
+                
+                    Xpos++;
+                    err=generror();
+                    Xesti_pos=Xpos+err;
+                    return Xesti_pos;
+               
+            }
+
+            else
+            {
+                err=generror();
+                Xesti_pos=Xpos;
+                return Xesti_pos;
+            }
+
+}
+if(!strcmp(rec, dec))
+{
+            //should keep decreasing until we reach Zpos=10
+            if(Xpos>0)
+            {
+               
+                    Xpos--;
+                    err=generror();
+                    Xesti_pos=Xpos+err;
+                    return Xesti_pos;
+                
+                
+            }
+
+            else
+            {
+                err=generror();
+                Xesti_pos=Xpos;
+                return Xesti_pos;
+            }
+}
+if(!strcmp(rec, still))
+{
+            err=generror();
+            Xesti_pos=Xpos+err;
+            return Xesti_pos;
+}
+
+if(!strcmp(rec, reset))
+{
+            err=0;
+            Xpos=0;
+            Xesti_pos=Xpos+err;
+            return Xesti_pos;
+
+}
+
 }
 
 
@@ -59,15 +130,18 @@ int main(int argc, char * argv[])
             */
            read(fd1, rec, 80);
            fd2 = open(inspectionx,O_WRONLY);
-           //should call function here to edit the sent stirng
+           pos=motion();
+           sprintf(sen, "%f", pos);
            write(fd2, sen, strlen(sen)+1);
         }
         else{
             /*
             no data update
             */
+                   
            fd2 = open(inspectionx,O_WRONLY);
-           //should call function here to edit the sent stirng
+           pos=motion();
+           sprintf(sen, "%f", pos);
            write(fd2, sen, strlen(sen)+1);
         }
         watchdogPID = atoi(argv[1]);
@@ -75,42 +149,3 @@ int main(int argc, char * argv[])
     } 
     return 0; 
 }
-
-//if u reach make and min no error is added 
-/*
-        char inc[] = "Inc";
-        char dec[] = "Dec";
-        char still[] = "Stil";
-
-        if(!strcmp(rec, inc)){
-            //should keep increasing until we reach Xpos=10
-            if(Xpos<10){
-                Xpos++;
-                err=generror();
-                Xesti_pos=Xpos+err;
-            }
-
-            else{
-                err=generror();
-                Xesti_pos=Xpos+err;
-            }
-
-        }
-        if(!strcmp(rec, dec)){
-            //should keep decreasing until we reach Xpos=10
-            if(Xpos>0){
-                Xpos--;
-                err=generror();
-                Xesti_pos=Xpos+err;
-            }
-
-            else{
-                err=generror();
-                Xesti_pos=Xpos+err;
-            }
-        }
-        if(!strcmp(rec, still)){
-            err=generror();
-            Xesti_pos=Xpos+err;
-        }
-*/

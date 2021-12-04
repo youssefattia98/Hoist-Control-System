@@ -1,13 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <ctype.h>
 #include <signal.h>
-#include <string.h>
+#include <string.h> 
+#include <fcntl.h> 
+#include <sys/stat.h> 
+#include <sys/types.h> 
+#include <unistd.h> 
 
+int command,  inspection, motorx , motorz;
+char senstr[]="";
+void sendingstring(){
+  char commandPIDstr[10]="";
+  sprintf(commandPIDstr, "%d", command);
+  char inspectionPIDstr[10]="";
+  sprintf(inspectionPIDstr, "%d", inspection);
+  char motorxPIDstr[10]="";
+  sprintf(motorxPIDstr, "%d", motorx);
+  char motorzPIDstr[10]="";
+  sprintf(motorzPIDstr, "%d", motorz);
+  commandPIDstr[strlen(commandPIDstr)]=',';
+  inspectionPIDstr[strlen(inspectionPIDstr)]=',';
+  motorxPIDstr[strlen(motorxPIDstr)]=',';
+  strcat(senstr, commandPIDstr);
+  strcat(senstr, inspectionPIDstr);
+  strcat(senstr, motorxPIDstr);
+  strcat(senstr, motorzPIDstr);
+  }
+
+void createfile(){
+  FILE *fp;
+  char pids[100];
+  //char senstr[100];
+
+  
+   // Open file in write mode
+   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pids","w+");
+
+   // If file opened successfully, then write the string to file
+   if ( fp )
+   {
+	   fputs(senstr,fp);
+    }
+   else
+      {
+         printf("Failed to open the file\n");
+        }
+//Close the file
+   fclose(fp);
+}
+  
 typedef enum {
   false,
   true
@@ -29,9 +71,6 @@ char motorxPIDstr[5];
 
 
 int main () {
-  pid_t command,  inspection, motorx , motorz;
-  int x;
-
   // registering signal handler
   struct sigaction sig;
   memset(&sig, 0, sizeof(sig));
@@ -71,7 +110,7 @@ int main () {
          watchdogPID = getppid();
          sprintf(watchdogPIDstr, "%d", watchdogPID);
          /* should exec the motorx process */
-         char *args[]={"/usr/bin/konsole","-e","./motorx",(char*)watchdogPIDstr,NULL};
+         char *args[]={"./motorx",(char*)watchdogPIDstr,NULL};
          execvp(args[0],args);
        }
        else{
@@ -89,8 +128,14 @@ int main () {
 
          else{
            //this is the master which has the watchdog timmer
+           char * pids = "/tmp/pids"; 
+           mkfifo(pids, 0666);
+           sendingstring();
+           createfile();
            while (1) {
-             fflush(stdout);
+            //  int fd = open(pids, O_WRONLY);
+            //  write(fd, senstr, strlen(senstr)+1);
+             puts(senstr);
              sleep(SLEEP_TIMER);
              if (commandsig) {
                // kill P1

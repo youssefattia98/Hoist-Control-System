@@ -10,10 +10,14 @@
 #include <ctype.h>
 
 //Global varibales
-int Zpos, Zesti_pos = 0;
+int Xpos=0;
+float Xesti_pos = 0;
 float err=0;
-char rec[80]="";
-char sen[80]= "from motor z"; //output sting
+char rec[80]="0";
+char sen[80]= "0"; //output sting
+char act[80]; //global variable stores which is token from the command
+float pos=0;
+
 
 float generror(){
 
@@ -23,6 +27,74 @@ float generror(){
     float error;
     srand ( time(NULL) );
     return error = (double)rand() / (double)RAND_MAX ;
+}
+
+
+// keys 
+char inc[] = "Inc";
+char dec[] = "Dec";
+char still[] = "Sti";
+char reset[]="reset";
+
+float motion(){
+    if(!strcmp(rec, inc))
+{
+            //should keep increasing until we reach Zpos=10
+            if(Xpos<10)
+            {
+                
+                    Xpos++;
+                    err=generror();
+                    Xesti_pos=Xpos+err;
+                    return Xesti_pos;
+               
+            }
+
+            else
+            {
+                err=generror();
+                Xesti_pos=Xpos;
+                return Xesti_pos;
+            }
+
+}
+    if(!strcmp(rec, dec))
+{
+            //should keep decreasing until we reach Zpos=10
+            if(Xpos>0)
+            {
+                
+                    Xpos--;
+                    err=generror();
+                    Xesti_pos=Xpos+err;
+                    return Xesti_pos;
+                
+                
+            }
+
+            else
+            {
+                err=generror();
+                Xesti_pos=Xpos;
+                return Xesti_pos;
+            }
+}
+    if(!strcmp(rec, still))
+{
+            err=generror();
+            Xesti_pos=Xpos+err;
+            return Xesti_pos;
+}
+
+    if(!strcmp(rec, reset))
+{
+            err=0;
+            Xpos=0;
+            Xesti_pos=Xpos+err;
+            return Xesti_pos;
+
+}
+
 }
 
 
@@ -53,10 +125,13 @@ int main(int argc, char * argv[])
         }
         else if (retval){
             /*
+            
             data is now available
             */
            read(fd2, rec, 80);
            //should call function here to edit the sent stirng
+           pos=motion();
+           sprintf(sen, "%f", pos);
            fd3 = open(inspectionz,O_WRONLY);
            write(fd3, sen, strlen(sen)+1);
         }
@@ -64,6 +139,8 @@ int main(int argc, char * argv[])
             /*
             no data update
             */
+           pos=motion();
+           sprintf(sen, "%f", pos);
            fd3 = open(inspectionz,O_WRONLY);
            write(fd3, sen, strlen(sen)+1);
         }
