@@ -17,6 +17,13 @@ char rec[80]="0";
 char sen[80]="0"; //out sting 
 char act[80]; //global variable stores which is token from the command
 float pos=0;
+int sign=0;
+
+int subadd(){
+     srand ( time(NULL) );
+    sign=rand()%2;
+    return sign;
+}
 
 
 char senstr[100];
@@ -50,10 +57,13 @@ float generror()
     /*
     This function returns a random number between 0 and 1 as float
     */
+    int sign=0; 
     float error;
     srand ( time(NULL) );
+
     return error = (double)rand() / (double)RAND_MAX ;
 }
+
 
 char inc[] = "Inc";
 char dec[] = "Dec";
@@ -75,7 +85,15 @@ if(!strcmp(rec, inc))
                 
                     Xpos++;
                     err=generror();
-                    Xesti_pos=Xpos+err;
+                    sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
+                    
                     return Xesti_pos;
                
             }
@@ -96,7 +114,14 @@ if(!strcmp(rec, dec))
                
                     Xpos--;
                     err=generror();
-                    Xesti_pos=Xpos+err;
+                    sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
                     return Xesti_pos;
                 
                 
@@ -112,7 +137,14 @@ if(!strcmp(rec, dec))
 if(!strcmp(rec, still))
 {
             err=generror();
-            Xesti_pos=Xpos+err;
+            sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
             return Xesti_pos;
 }
 if(!strcmp(rec, reset))

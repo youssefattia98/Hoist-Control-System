@@ -73,7 +73,7 @@ int main () {
          watchdogPID = getppid();
          sprintf(watchdogPIDstr, "%d", watchdogPID);
          /* should exec the motorx process */
-         char *args[]={"./motorx",(char*)watchdogPIDstr,NULL};
+         char *args[]={"/usr/bin/konsole",  "-e","./motorx",(char*)watchdogPIDstr,NULL};
          execvp(args[0],args);
        }
        else{

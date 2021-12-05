@@ -17,6 +17,8 @@ char rec[80]="0";
 char sen[80]= "0"; //output sting
 char act[80]; //global variable stores which is token from the command
 float pos=0;
+int sign =0;
+
 
 
 
@@ -64,11 +66,14 @@ char reset[]="res";
 void handle_sigusr2(int sig){
     strcpy(rec, reset);
 }
-
-float generror();
+int subadd(){
+     srand ( time(NULL) );
+    sign=rand()%2;
+    return sign;
+}
 
 float motion(){
-    if(!strcmp(rec, inc))
+if(!strcmp(rec, inc))
 {
             //should keep increasing until we reach Zpos=10
             if(Xpos<10)
@@ -76,7 +81,15 @@ float motion(){
                 
                     Xpos++;
                     err=generror();
-                    Xesti_pos=Xpos+err;
+                    sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
+                    
                     return Xesti_pos;
                
             }
@@ -89,15 +102,22 @@ float motion(){
             }
 
 }
-    if(!strcmp(rec, dec))
+if(!strcmp(rec, dec))
 {
             //should keep decreasing until we reach Zpos=10
             if(Xpos>0)
             {
-                
+               
                     Xpos--;
                     err=generror();
-                    Xesti_pos=Xpos+err;
+                    sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
                     return Xesti_pos;
                 
                 
@@ -110,20 +130,27 @@ float motion(){
                 return Xesti_pos;
             }
 }
-    if(!strcmp(rec, still))
+if(!strcmp(rec, still))
 {
             err=generror();
-            Xesti_pos=Xpos+err;
+            sign = subadd();
+                    err = err/2;
+                    if(sign==0){
+                        Xesti_pos=Xpos-err;
+                    }
+                    else{
+                        Xesti_pos=Xpos+err;
+                    }
             return Xesti_pos;
 }
-   if(!strcmp(rec, reset)){
+if(!strcmp(rec, reset))
+{
             err=0;
             Xpos=0;
             Xesti_pos=Xpos+err;
             return Xesti_pos;
 
 }
-
 }
 
 

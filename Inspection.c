@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
         printf("motor z:");
         puts(str3);
         fflush(stdout);
-        watchdogPID = atoi(argv[1]);
+        watchdogPID = atoi(argv[1]); // from sting to char
         kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
         }
         else{

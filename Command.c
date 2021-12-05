@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
-// nothing works because of the file creation
 
 char X_input[80], Z_input[80],  X_output[80], Z_output[80];
 char senstr[100];
