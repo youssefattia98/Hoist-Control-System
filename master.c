@@ -24,6 +24,10 @@ void sig_handler (int signo) {
   if (signo == SIGUSR1) { //if signal is recived change this boolen to false
     commandsig = false;
   }
+  if (signo== SIGUSR2){
+    kill(inspection,SIGTERM);
+    exit(EXIT_SUCCESS);
+  }
 }
 
 int watchdogPID;
@@ -38,6 +42,7 @@ int main () {
   memset(&sig, 0, sizeof(sig));
   sig.sa_handler = &sig_handler;
   sigaction(SIGUSR1, &sig, NULL);
+  sigaction(SIGUSR2, &sig, NULL);
 
   command = fork();
   if (command==0){

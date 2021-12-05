@@ -161,14 +161,19 @@ int main(int argc, char * argv[])
         }
         else if (retval){
             /*
-            
             data is now available
             */
            read(fd2, rec, 80);
-           //should call function here to edit the sent stirng
-           pos=motion();
-           sprintf(sen, "%f", pos);
            fd3 = open(inspectionz,O_WRONLY);
+           if (rec[0] == 'q')
+           {
+               sen[0]='q';// should be chnaged
+               write(fd3, sen, strlen(sen)+1);
+               exit(EXIT_SUCCESS) ;
+           }
+           pos=motion();
+           sprintf(sen, "%f", pos); //from string to float
+    
            write(fd3, sen, strlen(sen)+1);
         }
         else{

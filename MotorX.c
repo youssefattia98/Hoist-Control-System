@@ -67,8 +67,6 @@ void handle_sigusr2(int sig)
 }
 
 float motion(){
-    printf("the string is :");
-    puts(rec);
 if(!strcmp(rec, inc))
 {
             //should keep increasing until we reach Zpos=10
@@ -117,7 +115,6 @@ if(!strcmp(rec, still))
             Xesti_pos=Xpos+err;
             return Xesti_pos;
 }
-
 if(!strcmp(rec, reset))
 {
             err=0;
@@ -126,7 +123,6 @@ if(!strcmp(rec, reset))
             return Xesti_pos;
 
 }
-
 }
 
 
@@ -168,6 +164,12 @@ int main(int argc, char * argv[])
             */
            read(fd1, rec, 80);
            fd2 = open(inspectionx,O_WRONLY);
+           if (rec[0] == 'q')
+           {
+               sen[0]='q'; //should be changed
+               write(fd2, sen, strlen(sen)+1);
+               exit(EXIT_SUCCESS) ;
+           }
            pos=motion();
            sprintf(sen, "%f", pos);
            write(fd2, sen, strlen(sen)+1);

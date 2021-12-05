@@ -110,21 +110,34 @@ int main(int argc, char * argv[])
 
         
         watchdogPID = atoi(argv[1]);
-        printf("Please enter motor x command\n");
+        printf("Please enter motor x command, q will terminate all process.\n");
         printf("j: Increase\n");
         printf("l: Decrease\n");
-        printf("Any bottom: Stop\n");
+        printf("Any bottom: still\n");
         fflush(stdout);
         fgets(X_input, 80 , stdin); //print what i have just inputted
         fflush(stdout);
 
-        printf("Please enter motor z command\n");
+        printf("Please enter motor z command, q will terminate all process.\n");
         printf("i: Increase\n");
         printf("k: Decrease\n");
-        printf("Any bottom: Stop\n");
+        printf("Any bottom: Still\n");
         fflush(stdout);
         fgets(Z_input, 80 , stdin);
         fflush(stdout);
+
+        if (Z_input[0] == 'q'||X_input[0] == 'q'){
+            X_output[0]= 'q';
+            Z_output[0]= 'q';
+            write(fd, X_output, strlen(Z_input)+1);
+            write(fd2, Z_output, strlen(Z_input)+1);
+            unlink("/tmp/commandX");
+            unlink("/tmp/commandZ");
+            unlink("/tmp/inspectionx");
+            unlink("/tmp/inspectionz");
+            kill(watchdogPID,SIGUSR2);
+            exit(EXIT_SUCCESS) ;
+        }
 
         setting();
         
@@ -136,7 +149,5 @@ int main(int argc, char * argv[])
         close(fd2);
         kill(watchdogPID, SIGUSR1); //send a signal to the watchdog
     }
-    unlink("/tmp/commandX");
-    unlink("/tmp/commandZ");
     return 0; 
 } 

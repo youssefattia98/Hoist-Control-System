@@ -70,13 +70,14 @@ int main(int argc, char * argv[])
     {
         readfileX();
         readfileZ();
-        sleep(1);
         son=fork();
         if (son==0){
         fd2 = open(inspectionx,O_RDONLY);
         fd3 = open(inspectionz,O_RDONLY); 
         read(fd2, str2, 80);
         read(fd3, str3, 80);
+        puts(str2);
+        puts(str3);
         printf("motor x:");
         puts(str2);
         fflush(stdout);
