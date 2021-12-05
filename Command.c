@@ -18,7 +18,7 @@ void readfileX(){
   char pids[100];
   
   // Open file in write mode
-   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorX","r");
+   fp = fopen("./pidMotorX","r");
 
    // If file opened successfully, then write the string to file
    if ( fp ){
@@ -41,7 +41,7 @@ void readfileZ(){
   char pids[100];
   
   // Open file in write mode
-   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorZ","r");
+   fp = fopen("./pidMotorZ","r");
 
    // If file opened successfully, then write the string to file
    if ( fp ){

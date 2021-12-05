@@ -18,6 +18,8 @@ char sen[80]= "0"; //output sting
 char act[80]; //global variable stores which is token from the command
 float pos=0;
 
+
+
 char senstr[100];
 int motorzPID,motorxPID,commandPID,inspectionPID; 
 
@@ -25,13 +27,13 @@ void createfileZ(){
   FILE *fp;
   
    // Open file in write mode
-   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorZ","w+");
+   fp = fopen("./pidMotorZ","w+");
 
    // If file opened successfully, then write the string to file
    if ( fp )
    {
 	   motorzPID=getpid();
-       printf("my pid is:%d\n",motorzPID);
+       //printf("my pid is:%d\n",motorzPID);
        sprintf(senstr, "%d", motorzPID);
 	   fputs(senstr,fp);
     }
@@ -57,7 +59,7 @@ float generror(){
 char inc[] = "Inc";
 char dec[] = "Dec";
 char still[] = "Sti";
-char reset[]="reset";
+char reset[]="res";
 
 void handle_sigusr2(int sig){
     strcpy(rec, reset);
@@ -114,8 +116,7 @@ float motion(){
             Xesti_pos=Xpos+err;
             return Xesti_pos;
 }
-   if(!strcmp(rec, reset))
-{
+   if(!strcmp(rec, reset)){
             err=0;
             Xpos=0;
             Xesti_pos=Xpos+err;
@@ -138,6 +139,9 @@ int main(int argc, char * argv[])
     memset(&sig, 0, sizeof(sig));
     sig.sa_handler= &handle_sigusr2;
     sigaction(SIGUSR2, &sig, NULL);
+
+
+    
     
     while (1) 
     {

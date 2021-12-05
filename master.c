@@ -11,23 +11,6 @@
 int command,  inspection, motorx , motorz;
 char senstr[]="";
 
-void sendingstring(){
-  char commandPIDstr[10]="";
-  sprintf(commandPIDstr, "%d", command);
-  char inspectionPIDstr[10]="";
-  sprintf(inspectionPIDstr, "%d", inspection);
-  char motorxPIDstr[10]="";
-  sprintf(motorxPIDstr, "%d", motorx);
-  char motorzPIDstr[10]="";
-  sprintf(motorzPIDstr, "%d", motorz);
-  commandPIDstr[strlen(commandPIDstr)]=',';
-  inspectionPIDstr[strlen(inspectionPIDstr)]=',';
-  motorxPIDstr[strlen(motorxPIDstr)]=',';
-  strcat(senstr, commandPIDstr);
-  strcat(senstr, inspectionPIDstr);
-  strcat(senstr, motorxPIDstr);
-  strcat(senstr, motorzPIDstr);
-  }
   
 typedef enum {
   false,
@@ -81,12 +64,11 @@ int main () {
      }
      else{
        motorx = fork();
-       printf("motor x pid is:%d",motorx);
        if (motorx==0){
          watchdogPID = getppid();
          sprintf(watchdogPIDstr, "%d", watchdogPID);
          /* should exec the motorx process */
-         char *args[]={ "/usr/bin/konsole",  "-e","./motorx",(char*)watchdogPIDstr,NULL};
+         char *args[]={"./motorx",(char*)watchdogPIDstr,NULL};
          execvp(args[0],args);
        }
        else{
@@ -103,13 +85,12 @@ int main () {
 
 
          else{
-           sendingstring();
-          
            while (1) {
              sleep(SLEEP_TIMER);
              if (commandsig) {
                printf("Watchdog: Terminating processes...\n");
-               kill(command, SIGKILL); //should be changed
+               kill(motorx, SIGUSR2); //send a signal to the motorx
+               kill(motorz, SIGUSR2); //send a signal to the motorz
                return 0;
                }
             else {

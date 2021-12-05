@@ -16,13 +16,13 @@ void readfileX(){
   char pids[100];
   
   // Open file in write mode
-   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorX","r");
+   fp = fopen("./pidMotorX","r");
 
    // If file opened successfully, then write the string to file
    if ( fp ){
        while(fscanf(fp, "%s", senstr)!=EOF){
            sscanf(senstr, "%d",&motorxPID);
-           printf("%d\n",motorxPID);
+           //printf("%d\n",motorxPID);
            }  
    }
    else
@@ -39,7 +39,7 @@ void readfileZ(){
   char pids[100];
   
   // Open file in write mode
-   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorZ","r");
+   fp = fopen("./pidMotorZ","r");
 
    // If file opened successfully, then write the string to file
    if ( fp ){
@@ -93,12 +93,9 @@ int main(int argc, char * argv[])
             char stop[]="s\n";
             char reset[]="r\n";
             fgets(input, 80 , stdin);
-            printf("you have enetred:");
-            puts(input);
             if (!strcmp(input,stop))
             {
                 printf("process should stop\n");
-                printf("i will stop:%d\n",motorxPID);
                 kill(motorxPID, SIGSTOP); //send a signal to the motorx
          	    kill(motorzPID, SIGSTOP); //send a signal to the motorz
                 input[0]='\0';
