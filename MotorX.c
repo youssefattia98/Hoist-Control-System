@@ -18,6 +18,32 @@ char sen[80]="0"; //out sting
 char act[80]; //global variable stores which is token from the command
 float pos=0;
 
+char senstr[100];
+int motorzPID,motorxPID,commandPID,inspectionPID; 
+
+void createfileX(){
+  FILE *fp;
+
+  
+   // Open file in write mode
+   fp = fopen("/home/youssefattia/Desktop/ARPASSNEW/pidMotorX","w+");
+
+   // If file opened successfully, then write the string to file
+   if ( fp )
+   {
+       motorxPID=getpid();
+       printf("my pid is:%d\n",motorxPID);
+       sprintf(senstr, "%d", motorxPID);
+	   fputs(senstr,fp);
+    }
+   else
+      {
+         printf("Failed to open the file\n");
+        }
+//Close the file
+   fclose(fp);
+}
+
 float generror()
 {
     /*
@@ -104,13 +130,11 @@ int main(int argc, char * argv[])
      
     char * commandX = "/tmp/commandX"; 
     char * inspectionx = "/tmp/inspectionx"; 
-    mkfifo(inspectionx, 0666); 
-
-
-
+    mkfifo(inspectionx, 0666);
 
     while (1) 
     {
+        createfileX();
         fd1 = open(commandX,O_RDONLY);
         fd_set rfds;
         struct timeval tv;
