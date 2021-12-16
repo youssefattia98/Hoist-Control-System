@@ -1,7 +1,4 @@
-gcc Command.c -o command
-gcc MotorX.c -o motorx
-gcc MotorZ.c -o motorz
-gcc Inspection.c -o inspection
-
-konsole  -e ./command &
-konsole  -e ./inspection &
+echo please enter path of the unzipped folder
+read pathname
+cd $pathname/HA_1/Master
+./masterWD
