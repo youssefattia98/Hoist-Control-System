@@ -14,3 +14,5 @@ The project is composed by 5 processes:
 
 Each of this process has a section in which a signal is sent to the watchdog timer to prove theyre functioning.
 In the repository theres the run.sh file that compiles and run all the processes at the same time on the Konsole terminal. 
+
+Work done in cooperation with [Alice Maria Catalano](https://github.com/AliceCatalano) and [Hussein Hassan](https://github.com/husseinfd97).
