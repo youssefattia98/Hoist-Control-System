@@ -40,5 +40,40 @@ gcc Inspection.c -o inspection
 cd ..
 cd Master
 gcc master.c -o masterWD
+```
+## Running the Application
+Use the run.sh script to start the application:
+```bash
+#!/bin/bash
+echo please enter path of the unzipped folder
+read pathname
+cd $pathname/HA_1/Master
+./masterWD
+```
 
+## System Interaction
+
+After running the application using the `run.sh` script, the system waits for inputs from the Command console for hoist movement. The commands for movement are as follows:
+
+- `j` : Increase motorX position
+- `l` : Decrease motorZ position
+- `i` : Increase motorZ position
+- `k` : Decrease motorZ position
+- `q` : Terminate all the four processes
+
+For any other key press, the motor will remain in the same position until another valid command is given.
+
+## System Resilience
+
+The system employs a watchdog mechanism in the master process to monitor the functioning of all subprocesses. The watchdog timer relies on a global boolean variable `commandsig` initially set to `true`. Each subprocess sends a signal to the master process upon successful execution, causing the watchdog timer to reset `commandsig` to `false`. If none of the subprocesses send a signal within a 60-second window, the watchdog timer will terminate all subprocesses, thus ensuring the overall system stability.
+
+## Emergency Controls
+
+In case of emergency, the system provides two functions - STOP and RESET. These functions can be accessed from the Inspection console. The STOP command halts all motor movements but allows for later resumption. The RESET command not only stops all movement but also brings the motors to a zero position.
+
+## Important Note
+
+All of the above processes send a signal to the watchdog timer to prove they’re functioning. Additionally, each motor process writes its process ID to a .txt file at runtime. This allows for correct signal routing from the consoles to the intended processes.
+
+For more details about the implementation of the individual processes, please refer to the source code documentation.
 Work done in cooperation with [Alice Maria Catalano](https://github.com/AliceCatalano) and [Hussein Hassan](https://github.com/husseinfd97).
