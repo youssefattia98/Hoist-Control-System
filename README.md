@@ -1,6 +1,6 @@
 # Hoist Control System
 
-The program is designed to control a hoist using inputs from two different consoles. The system can control the direction of hoist movement (Command console) and provide outputs from the motors (Inspection console). In addition, it offers two emergency functions: 
+This is a Hoist Control System implemented as a multi-process application in C following POSIX (Portable Operating System Interface) standards. It utilizes various inter-process communication methods including named and unnamed pipes, alongside a watchdog timer mechanism for resilience. The system operates in a Linux environment. The program is designed to control a hoist using inputs from two different consoles. The system can control the direction of hoist movement (Command console) and provide outputs from the motors (Inspection console). In addition, it offers two emergency functions: 
 
 - **STOP**: Immediately halt the movement of the motors, with the option to restart later.
 - **RESET**: Immediately halt the hoist movement and return the motors to the zero position.
